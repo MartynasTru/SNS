@@ -1,0 +1,33 @@
+Making an API for SNS:
+
+ 1. Hi, whats your name?
+ 2. Hello Paul, I am WeatherGPT and I can predict weather in a specific area around UK, here is the list of options:
+	Yorkshire
+	London
+	Manchester
+	...
+    Please make your choice.
+ 
+ USER --> London | USER --> Bullshit --> Sorry, I do not cover the are, here is the list again:
+ 3. What would you like to know about London? I offer a variety of weather parameters, please choose one:
+	Percipitation
+	Cloudiness
+	Maximum temperature
+	Lowest temperature
+ USER --> Precipitation | USER --> Bullshit --> Sorry, this parameter is unavailble in my current version, please choose one of the following:
+ 4. London - Precipitation, which day of the future would you like me to predict? Please input in the following format (dd/mm/yyyy)
+ USER --> 20/08/2023 | USER --> Bullshit --> This day is in the past, I am meant to predict the future, please type a future date.
+ 5. Predicting... Calculating... Looking at the stars...
+ 6. 
+	Your requested day:
+	August 20th of 2023 is expected to have 20mm of rain.
+
+	I have also gathered data for 3 days before and after your selected time:
+	August 17th of 2023 is expected to have 3mm of rain.
+	August 18th of 2023 is expected to have 15mm of rain.
+	August 19th of 2023 is expected to have 11mm of rain.
+	August 20th of 2023 is expected to have 20mm of rain.
+	August 21th of 2023 is expected to have 4mm of rain.
+	August 22th of 2023 is expected to have 3mm of rain.
+	August 23th of 2023 is expected to have 1mm of rain.
+
