@@ -1,10 +1,10 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.model_selection import TimeSeriesSplit
+from sklearn.model_selection import TimeSeriesSplit, GridSearchCV
 from keras.models import Sequential
 from keras.layers import Dense, LSTM, Bidirectional, Dropout
-import matplotlib.pyplot as plt
+from keras.optimizers import Adam
 
 # Load the dataset
 data = pd.read_csv("weather_data.csv", parse_dates=["datetime"], index_col="datetime")
@@ -21,7 +21,7 @@ def create_sequences(data, seq_length):
         y.append(data[i + seq_length])
     return np.array(x), np.array(y)
 
-seq_length = 7
+seq_length = 24
 x, y = create_sequences(data_scaled, seq_length)
 
 # Train-test split
@@ -29,53 +29,46 @@ train_size = int(0.8 * len(x))
 x_train, x_test = x[:train_size], x[train_size:]
 y_train, y_test = y[:train_size], y[train_size:]
 
-# Cross-validation
-tscv = TimeSeriesSplit(n_splits=5)
-validation_errors = []
+# Define the parameter grid for the grid search
+param_grid = {
+    'seq_length': [24, 48],
+    'num_units': [50, 100],
+    'dropout': [0.2, 0.5],
+    'learning_rate': [0.001, 0.01, 0.1],
+    'batch_size': [32, 64],
+    'epochs': [50, 100]
+}
 
-# Loop through the time series splits
-for train_index, val_index in tscv.split(x_train):
-    x_train_fold, x_val_fold = x_train[train_index], x_train[val_index]
-    y_train_fold, y_val_fold = y_train[train_index], y_train[val_index]
-
-    # Initialize the LSTM model
+# Initialize the LSTM model
+def create_model(seq_length, num_units, dropout, learning_rate):
     model = Sequential()
-    model.add(Bidirectional(LSTM(units=50, return_sequences=True), input_shape=(x_train_fold.shape[1], data.shape[1])))
-    model.add(Dropout(0.2))
-    model.add(Bidirectional(LSTM(units=50)))
-    model.add(Dropout(0.2))
+    model.add(Bidirectional(LSTM(units=num_units, return_sequences=True), input_shape=(seq_length, data.shape[1])))
+    model.add(Dropout(dropout))
+    model.add(Bidirectional(LSTM(units=num_units)))
+    model.add(Dropout(dropout))
     model.add(Dense(units=data.shape[1]))
+    optimizer = Adam(lr=learning_rate)
+    model.compile(optimizer=optimizer, loss='mean_squared_error')
+    return model
 
-    # Compile and train the model
-    model.compile(optimizer='adam', loss='mean_squared_error')
-    model.fit(x_train_fold, y_train_fold, epochs=50, batch_size=32, verbose=0)
+# Define the time series cross-validation
+tscv = TimeSeriesSplit(n_splits=5)
 
-    # Evaluate the model on the validation set
-    val_error = model.evaluate(x_val_fold, y_val_fold, verbose=0)
-    validation_errors.append(val_error)
+# Initialize the grid search
+grid_search = GridSearchCV(estimator=KerasRegressor(build_fn=create_model), param_grid=param_grid, cv=tscv, verbose=1)
 
-# Calculate the average validation error across all folds
-average_validation_error = np.mean(validation_errors)
-print(f'Average validation error: {average_validation_error}')
+# Fit the grid search to the training data
+grid_search_results = grid_search.fit(x_train, y_train)
 
+# Print the best parameters and validation error
+print(f"Best Parameters: {grid_search_results.best_params_}")
+print(f"Validation Error: {grid_search_results.best_score_}")
 
-# Evaluate the model on the test set
+# Train the final model on the full training dataset using the best hyperparameters
+best_params = grid_search_results.best_params_
+model = create_model(best_params['seq_length'], best_params['num_units'], best_params['dropout'], best_params['learning_rate'])
+model.fit(x_train, y_train, epochs=best_params['epochs'], batch_size=best_params['batch_size'], verbose=1)
+
+# Evaluate the final model on the test dataset
 test_error = model.evaluate(x_test, y_test, verbose=0)
-print(f'Test error: {test_error}')
-
-# Make predictions on the test set
-y_pred = model.predict(x_test)
-
-# Inverse transform the scaled data back to the original values
-y_test = scaler.inverse_transform(y_test)
-y_pred = scaler.inverse_transform(y_pred)
-
-# Calculate the root mean squared error
-rmse = np.sqrt(np.mean(np.square(y_test - y_pred)))
-print(f'Root Mean Squared Error (RMSE): {rmse}')
-
-# Plot the predicted and true values
-plt.plot(y_test, label="True values")
-plt.plot(y_pred, label="Predicted values")
-plt.legend()
-plt.show() 
+print(f"Test Error: {test_error}")
