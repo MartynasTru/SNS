@@ -21,7 +21,7 @@ def create_sequences(data, seq_length):
         y.append(data[i + seq_length])
     return np.array(x), np.array(y)
 
-seq_length = 24
+seq_length = 7
 x, y = create_sequences(data_scaled, seq_length)
 
 # Train-test split
