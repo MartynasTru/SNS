@@ -9,7 +9,7 @@ from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 
 # Load the dataset
-data = pd.read_csv("sample_data.csv", parse_dates=["datetime"], index_col="datetime")
+data = pd.read_csv("london_dataset.csv", parse_dates=["datetime"], index_col="datetime")
 data = data.values
 # Create sequences
 def create_sequences(data, seq_length):
@@ -64,7 +64,7 @@ def create_model(seq_length, num_units, dropout, learning_rate):
 tscv = TimeSeriesSplit(n_splits=3)
 
 # Initialize the grid search
-grid_search = GridSearchCV(estimator=KerasRegressor(build_fn=create_model), param_grid=param_grid, cv=tscv, verbose=1)
+grid_search = GridSearchCV(estimator=KerasRegressor(build_fn=create_model), param_grid=param_grid, cv=tscv, verbose=2)
 
 # Fit the grid search to the training data
 grid_search_results = grid_search.fit(x_train, y_train)
