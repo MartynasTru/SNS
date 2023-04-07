@@ -10,10 +10,18 @@ The project is organized as follows:
 - [model.h5](model.h5) - this is the pre-trained LSTM model
 
 <span style="color:#E75480">TODO:</span> 
+for today
 - go through all files to see whats useful.. choose the files and delete the rest
 - decide if we have enough stuff
 - cosmetic changes to all files 
 - add files to readme description
 - add description of how to test code in readme
+
+
+For Lazim:
+- add comments to the code and make it relatively readable (in the classical_regression_models file)
+- the bottom code cell in your file gives an error so probably either delete it or make it work
+- explain your models in the report ... maybe just put it in METHODOLOGY section at the beginning and be like "oh we first decided to explore what models we can use and so we started with classical / statistical models and then we decided LSTM was either better or we wanted to learn how it works and hence we used it
+ 
 
 
