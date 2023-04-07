@@ -9,3 +9,11 @@ The project is organized as follows:
 
 - [model.h5](model.h5) - this is the pre-trained LSTM model
 
+<span style="color:#E75480">TODO:</span> 
+- go through all files to see whats useful.. choose the files and delete the rest
+- decide if we have enough stuff
+- cosmetic changes to all files 
+- add files to readme description
+- add description of how to test code in readme
+
+
