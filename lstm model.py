@@ -8,8 +8,18 @@ from keras.layers import Dense, LSTM, Bidirectional, Dropout
 from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 
+scaler = MinMaxScaler()
+
 # Load the dataset
-data = pd.read_csv("london_dataset.csv", parse_dates=["datetime"], index_col="datetime")
+df = pd.read_csv('london_dataset.csv')
+# Select only the required columns
+df = df[['datetime', 'tempmax', 'tempmin', 'temp', 'humidity', 'cloudcover', 'precip', 'windspeed']]
+# Parse datetime column as index
+df['datetime'] = pd.to_datetime(df['datetime'])
+df.set_index('datetime', inplace=True)
+data = scaler.fit_transform(df)
+
+data = pd.DataFrame(data)
 data = data.values
 # Create sequences
 def create_sequences(data, seq_length):
