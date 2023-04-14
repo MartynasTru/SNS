@@ -5,15 +5,15 @@ from datetime import datetime
 from sklearn.preprocessing import MinMaxScaler
 
 
-def data(input_date):
+def predict_weather(input_date):
     # Load the pre-trained time-series forecasting model in h5 format
-    model = load_model('my_model.h5')
+    model = load_model('model.h5')
 
     # Load the scaler object used to scale the data during training
     scaler = MinMaxScaler()
 
     # Load the training data and fit the scaler object to the data
-    df = pd.read_csv('London 2012-01-01 to 2022-01-01.csv')
+    df = pd.read_csv('london_dataset.csv')
     # Select only the required columns
     df = df[['datetime', 'tempmax', 'tempmin', 'temp', 'humidity', 'cloudcover', 'precip', 'windspeed']]
     column_names = df.columns.tolist()
@@ -50,5 +50,5 @@ def data(input_date):
         input_data = np.concatenate((input_data[:,1:,:], prediction), axis=1) # Shift the input data by 1 day
 
 
-    return predicted_values[len(future_dates)-1][0]
+    return predicted_values[len(future_dates)-1][0].tolist()
     
