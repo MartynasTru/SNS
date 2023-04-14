@@ -5,9 +5,11 @@ from _thread import *
 import threading
 import datetime
 import re
+from predict import predict_weather
 print_lock = threading.Lock()
 # thread fuction
 def threaded(c):
+    date_obj = 0
     while True:
         # data received from client
         data = c.recv(1024)
@@ -76,6 +78,10 @@ def threaded(c):
                         # The received date is in the past or present
                         c.send("wrong_date".encode('ascii'))
         if data == "requested_info":
+            print(date_obj)
+            predictions = predict_weather(date_obj)
+            prediction_1 = predictions[5]
+            c.send(str(prediction_1).encode('ascii'))
             c.send("Your requested weather".encode('ascii'))
             
         
@@ -87,7 +93,7 @@ def Main():
     # reverse a port on your computer
     # in our case it is 12345 but it
     # can be anything
-    port = 12345
+    port = 54321
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((host, port))
     print("socket binded to post", port)
