@@ -50,5 +50,5 @@ def predict_weather(input_date):
         input_data = np.concatenate((input_data[:,1:,:], prediction), axis=1) # Shift the input data by 1 day
 
 
-    return predicted_values[len(future_dates)-1][0].tolist()
+    return predicted_values[len(future_dates)-1][0]
     
