@@ -79,7 +79,6 @@ class WeatherPredictor:
         self.show_area_list()
 
     def show_area_list(self):
-        self.label_greeting.pack_forget()
         self.label_area = tk.Label(self.master, text='Here is the list of available areas: ', font=("Helvetica", 16), bg="#F2F2F2")
         self.label_area.pack(pady=20)
         self.s.send("area_received".encode('ascii'))
@@ -108,6 +107,7 @@ class WeatherPredictor:
             self.label_error.pack(pady=10)
 
     def show_parameter_list(self):
+        self.label_greeting.pack_forget()
         self.label_area.pack_forget()
         self.listbox_area.pack_forget()
         self.button_area.pack_forget()
@@ -142,6 +142,9 @@ class WeatherPredictor:
 
 
     def show_date_selector(self):
+        self.label_parameter.pack_forget()
+        self.listbox_parameter.pack_forget()
+        self.button_parameter.pack_forget()
         if self.incorrect_parameter:
             self.label_parameter.pack()
             self.s.send("parameter_received".encode('ascii'))
@@ -155,12 +158,12 @@ class WeatherPredictor:
             return
 
         self.s.send("date_received".encode('ascii'))
-        self.label_date = tk.Label(self.master, text='Please select a date: ')
+        self.label_date = tk.Label(self.master, text='Please select a date: ',font=("Helvetica", 16), bg="#F2F2F2")
         self.cal = tkcalendar.Calendar(self.master, selectmode='day', year=2023, month=4, day=17) # Replace year, month, day with your desired default date
-        self.button_date = tk.Button(self.master, text="Submit", command=self.handle_date_submit)
-        self.label_date.place(x=100, y=50) # Adjust the position as needed
-        self.cal.place(x=100, y=80) # Adjust the position as needed
-        self.button_date.place(x=100, y=250) # Adjust the position as needed
+        self.button_date = tk.Button(self.master, text="Submit", command=self.handle_date_submit,font=("Helvetica", 16), bg="#F2F2F2")
+        self.label_date.place(x=200, y=50) # Adjust the position as needed
+        self.cal.place(x=200, y=80) # Adjust the position as needed
+        self.button_date.place(x=250, y=350) # Adjust the position as needed
 
     def handle_date_submit(self):
         self.date_user = self.cal.get_date().strip()
@@ -235,11 +238,60 @@ class WeatherPredictor:
 
         # format weather_data to 2 decimal places
         weather_data_formatted = "{:.2f}".format(float(weather_data))
-
-        self.label_report = tk.Label(self.master, text=f"Here is the weather report for London on {self.date_user}: \n There will be {weather_data_formatted} mm of rain",font=('Helvetica', 14))
+        self.parameter_list = [parameter.strip() for parameter in self.parameter_list.split(",")]
+        index = self.parameter_list.index(self.selected_parameter)
+        print(index)
+        if index == 0:
+            self.label_report = tk.Label(self.master, text=f"Here is the weather report for London on {self.date_user}: \n The max Temperature will be {weather_data_formatted} degrees celsius",font=('Helvetica', 14))
+        elif index == 1:
+            self.label_report = tk.Label(self.master, text=f"Here is the weather report for London on {self.date_user}: \n  The min Temperature will be {weather_data_formatted} degrees celsius",font=('Helvetica', 14))
+        elif index == 2:
+            self.label_report = tk.Label(self.master, text=f"Here is the weather report for London on {self.date_user}: \n  The average Temperature will be {weather_data_formatted} degrees celsius",font=('Helvetica', 14))
+        elif index == 3:
+            self.label_report = tk.Label(self.master, text=f"Here is the weather report for London on {self.date_user}: \n  It will be {weather_data_formatted}% Humid",font=('Helvetica', 14))
+        elif index == 4:
+            self.label_report = tk.Label(self.master, text=f"Here is the weather report for London on {self.date_user}: \n  The Cloud Coverage will be {weather_data_formatted}%",font=('Helvetica', 14))
+        elif index == 5:
+            self.label_report = tk.Label(self.master, text=f"Here is the weather report for London on {self.date_user}: \n There will be {weather_data_formatted} mm of rain",font=('Helvetica', 14))
+        elif index == 6:
+            self.label_report = tk.Label(self.master, text=f"Here is the weather report for London on {self.date_user}: \n  The Windspeed will be {weather_data_formatted}",font=('Helvetica', 14))
         self.label_report.pack(pady=20)
 
+        self.button_restart = tk.Button(self.master, text="Restart", command=self.handle_restart, font=("Helvetica", 14), bg="#337AB7", fg="#F2F2F2")
+        self.button_restart.pack(pady=10)
+
+    def handle_restart(self):
+        self.label_report.pack_forget()
+        self.button_restart.pack_forget()
+        self.message = "\n\nHi, I am Oracle the weather predictor."
+        self.name_received = False
+        self.area_list_received = False
+        self.area_selected = False
+        self.area_valid = False
+        self.incorrect_area = False
+        self.parameter_selected = False
+        self.parameter_list_received = False
+        self.incorrect_parameter = False
+        self.date_selected = False
+        self.incorrect_date = False
+        self.label_intro = tk.Label(self.master, text=self.message, font=("Helvetica", 18), bg="#F2F2F2")
+        self.label_intro.pack(pady=20)
+
+        self.button_continue = tk.Button(self.master, text="Continue", command=self.handle_continue, font=("Helvetica", 14), bg="#337AB7", fg="#F2F2F2")
+        self.button_continue.pack(pady=10)
+
+        self.label_name = tk.Label(self.master, text="Firstly, what is your name?", font=("Helvetica", 16), bg="#F2F2F2")
+        self.entry_name = tk.Entry(self.master, font=("Helvetica", 14))
+        self.button_name = tk.Button(self.master, text="Submit", command=self.handle_name_submit, font=("Helvetica", 14), bg="#337AB7", fg="#F2F2F2")
+
+
+
+
+    
+        
+
     def handle_exit(self):
+        self.s.close()
         self.master.destroy()
 
 if __name__ == '__main__':
