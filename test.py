@@ -3,6 +3,10 @@ import socket
 from tkinter import *
 import threading
 from PIL import Image, ImageTk
+import tkcalendar
+import datetime
+import time
+import tkinter.simpledialog
 
 
 class WeatherPredictor:
@@ -128,46 +132,74 @@ class WeatherPredictor:
             self.incorrect_parameter = False
             self.s.send(self.selected_parameter.encode('ascii'))
             self.parameter_valid = self.s.recv(1024).decode('ascii') == "valid_parameter"
-            self.show_date_select()
+            self.show_date_selector()
         else:
             self.incorrect_parameter = True
             self.label_error = tk.Label(self.master, text='Please select a parameter from the list.', font=("Helvetica", 14), fg="red", bg="#F2F2F2")
             self.label_error.pack(pady=10)
 
-    def show_date_select(self):
-        self.label_parameter.pack_forget()
-        self.listbox_parameter.pack_forget()
-        self.button_parameter.pack_forget()
-        self.s.send("date_received".encode('ascii'))
-        self.label_date = tk.Label(self.master, text='Please enter the date you want to know (dd/mm/yyyy):', font=("Helvetica", 16), bg="#F2F2F2")
-        self.label_date.pack(pady=20)
-        self.entry_date = tk.Entry(self.master, font=("Helvetica", 14))
-        self.entry_date.pack(pady=10)
-        self.button_date = tk.Button(self.master, text="Select Date", command=self.handle_date_select, font=("Helvetica", 14), bg="#337AB7", fg="#F2F2F2")
-        self.button_date.pack(pady=10)
 
-    def handle_date_select(self):
-        self.date_user = self.entry_date.get().strip()
-        self.label_date.pack_forget()
-        self.entry_date.pack_forget()
-        self.button_date.pack_forget()
-        self.s.send(self.date_user.encode('ascii'))
-        info = self.s.recv(1024)
-        if info == "invalid_date":
-            self.incorrect_date is True
-        self.show_weather_report()
 
-    def show_weather_report(self):
-        if self.incorrect_date:
-            self.label_date.pack()
-            self.entry_date.pack()
-            self.button_date.pack()
+
+    def show_date_selector(self):
+        if self.incorrect_parameter:
+            self.label_parameter.pack()
+            self.s.send("parameter_received".encode('ascii'))
+            self.parameter_list = self.s.recv(1024)
+            self.listbox_parameter = tk.Listbox(self.master, selectmode='SINGLE', exportselection=0)
+            for parameter in self.parameter_list.split(','):
+                self.listbox_parameter.insert('end', parameter)
+            self.listbox_parameter.pack()
+            self.button_parameter = tk.Button(self.master, text="Submit", command=self.handle_parameter_submit)
+            self.button_parameter.pack()
             return
 
-        self.label_date.pack_forget()
-        self.entry_date.pack_forget()
-        self.button_date.pack_forget()
-        
+        self.s.send("date_received".encode('ascii'))
+        self.label_date = tk.Label(self.master, text='Please select a date: ')
+        self.cal = tkcalendar.Calendar(self.master, selectmode='day', year=2023, month=4, day=17) # Replace year, month, day with your desired default date
+        self.button_date = tk.Button(self.master, text="Submit", command=self.handle_date_submit)
+        self.label_date.place(x=100, y=50) # Adjust the position as needed
+        self.cal.place(x=100, y=80) # Adjust the position as needed
+        self.button_date.place(x=100, y=250) # Adjust the position as needed
+
+    def handle_date_submit(self):
+        self.date_user = self.cal.get_date().strip()
+        self.date_user = datetime.datetime.strptime(self.date_user, "%m/%d/%y")
+        self.date_user = self.date_user.strftime('%d/%m/%Y')
+        self.label_date.destroy()
+        self.cal.destroy()
+        self.button_date.destroy()
+
+        self.s.send(self.date_user.encode('ascii'))
+        info = self.s.recv(1024).decode('ascii')
+        print(info)
+        if info == "valid_date":
+            self.incorrect_date = False
+            self.show_weather_report()
+        elif info == "wrong_date":
+            self.incorrect_date = True
+            self.show_error_message("Please Select a Valid date")
+            self.show_date_selector()
+    def show_error_message(self, message):
+        top = tk.Toplevel(self.master)
+        top.geometry("200x100")
+        top.title("Error")
+
+        label = tk.Label(top, text=message)
+        label.pack(pady=10)
+
+        ok_button = tk.Button(top, text="OK", command=top.destroy)
+        ok_button.pack(pady=10)
+    def show_weather_report(self):
+        if self.incorrect_date:
+            print("yes1")
+            self.label_date = tk.Label(self.master, text='Please select a date: ')
+            self.cal = tkcalendar.Calendar(self.master, selectmode='day', year=2022, month=4, day=17) # Replace year, month, day with your desired default date
+            self.button_date = tk.Button(self.master, text="Submit", command=self.handle_date_submit)
+            self.label_date.place(x=100, y=50) # Adjust the position as needed
+            self.cal.place(x=100, y=80) # Adjust the position as needed
+            self.button_date.place(x=100, y=250) # Adjust the position as needed
+            return
         self.label_wait = tk.Label(self.master, text="Calculating...", font=('Helvetica', 14))
         self.label_wait.pack(pady=10)
         self.master.update()
