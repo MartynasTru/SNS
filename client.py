@@ -1,193 +1,180 @@
+import tkinter as tk
 import socket
+from datetime import datetime
+from tkinter import *
+import tkcalendar
 
-def Main():
-    # local host IP ’127.0.0.1’
-    host = '127.0.0.1'
-    # Define the port on which you want to connect
-    port = 54321
-    s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-    # connect to server on local computer
-    s.connect((host,port))
-    # message you send to server
-    message = "\n\nHi, I am Oracle the weather predictor."
-    
-    #Variables for looping back in case of wrong input
-    ans = ""
-    run = 0
-    name_received = 0
 
-    area_list_received = 0
+class WeatherPredictor:
+    def __init__(self, master):
+        self.master = master
+        master.title("Oracle - The Weather Predictor")
+        self.host = '127.0.0.1'
+        self.port = 54321
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.s.connect((self.host, self.port))
+        self.message = "\n\nHi, I am Oracle the weather predictor."
+        self.name_received = False
+        self.area_list_received = False
+        self.area_selected = False
+        self.area_valid = False
+        self.incorrect_area = False
+        self.parameter_selected = False
+        self.parameter_list_received = False
+        self.incorrect_parameter = False
+        self.date_selected = False
+        self.incorrect_date = False
 
-    incorrect_area = 0
-    area_selected = 0
+        self.label_intro = tk.Label(master, text=self.message)
+        self.label_intro.pack()
 
-    parameter_selected = 0
-    incorrect_parameter = 0
+        self.button_continue = tk.Button(master, text="Continue", command=self.handle_continue)
+        self.button_continue.pack(pady=10)
 
-    date_selected = 0
-    incorrect_date = 0
+        self.label_name = tk.Label(master, text="Firstly, what is your name?")
+        self.entry_name = tk.Entry(master)
+        self.button_name = tk.Button(master, text="Submit", command=self.handle_name_submit)
 
-    while True:
+    def handle_continue(self):
+        self.s.send("continue".encode('ascii'))
+        self.show_name()
 
-        if run == 0:
-            # Static variables received from server during session
-            area_list = ''
-            area_user = ''
-            
-            parameter_list = ''
-            parameter_user = ''
+    def show_name(self):
+        self.label_intro.pack_forget()
+        self.button_continue.pack_forget()
+        self.label_name.pack()
+        self.entry_name.pack()
+        self.button_name.pack()
 
-            date_user = ''
-            # message sent to server
-            s.send(message.encode('ascii'))
-            # print the received message
-            print(message)
-            # ask the client whether he wants to continue
-            ans = input('\nWould you like to learn about future weather?(y/n) :')
-        else: 
-            s.send("continue".encode('ascii'))
-            ans = 'y'
-        if ans == 'y':
+    def handle_name_submit(self):
+        self.name = self.entry_name.get().strip()
+        self.label_name.pack_forget()
+        self.entry_name.pack_forget()
+        self.button_name.pack_forget()
+        self.label_greeting = tk.Label(self.master, text=f"Nice to meet you, {self.name}.")
+        self.label_greeting.pack()
+        self.name_received = True
+        self.s.send("name_received".encode('ascii'))
+        self.show_area_list()
 
-            #If this loop started then no need to come back to intro
-            run = 1
+    def show_area_list(self):
+        self.label_greeting.pack_forget()
+        self.label_area = tk.Label(self.master, text='Here is the list of available areas: ')
+        self.label_area.pack()
+        self.s.send("area_received".encode('ascii'))
+        self.area_list = self.s.recv(1024)
+        self.area_list = str(self.area_list.decode('ascii'))
+        self.area_list_received = True
+        self.listbox_area = tk.Listbox(self.master, selectmode='SINGLE', exportselection=0)
+        for area in self.area_list.split(','):
+            self.listbox_area.insert('end', area)
+        self.listbox_area.pack()
+        self.button_area = tk.Button(self.master, text="Submit", command=self.handle_area_submit)
+        self.button_area.pack()
 
-            if name_received == 0:
-                # 1: Taking users name
-                name = input('\nPerfect, firstly, what is your name? ')
-                print(f'\nNice to meet you, {name}.')
-                
-                #Updating server that name was received
-                s.send("name_received".encode('ascii'))
-                name_received = 1
+    def handle_area_submit(self):
+        selected_areas = self.listbox_area.curselection()
+        if not selected_areas:
+            return
+        self.area_user = self.listbox_area.get(selected_areas[0])
+        self.listbox_area.pack_forget()
+        self.button_area.pack_forget()
+        self.label_area.pack_forget()
+        self.s.send(self.area_user.encode('ascii'))
+        self.area_valid = self.s.recv(1024).decode('ascii') == "valid_area"
+        if not self.area_valid:
+            self.incorrect_area = True
+        self.show_parameter_list()
 
-            if area_list_received == 1 and area_selected == 0:
-                s.send("area_received".encode('ascii'))
+    def show_parameter_list(self):
+        if self.incorrect_area:
+            self.label_area.pack()
+            self.s.send("area_received".encode('ascii'))
+            self.area_list = self.s.recv(1024)
+            self.area_list = str(self.area_list.decode('ascii'))
+            self.listbox_area = tk.Listbox(self.master, selectmode='SINGLE', exportselection=0)
+            for area in self.area_list.split(','):
+                self.listbox_area.insert('end', area)
+            self.listbox_area.pack()
+            self.button_area = tk.Button(self.master, text="Submit", command=self.handle_area_submit)
+            self.button_area.pack()
+            return
 
-            if area_list_received == 0:
-            # Getting a list of names from the server
-                s.send("area_received".encode('ascii'))
-                area_list = s.recv(1024)
-                area_list = str(area_list.decode('ascii'))
-                area_list_received = 1
-            
+        self.label_parameter = tk.Label(self.master, text='Select a parameter: ')
+        self.label_parameter.pack()
+        self.s.send("parameter_received".encode('ascii'))
+        self.parameter_list = self.s.recv(1024)
+        self.parameter_list = str(self.parameter_list.decode('ascii'))
+        self.listbox_parameter = tk.Listbox(self.master, selectmode='SINGLE', exportselection=0)
+        for parameter in self.parameter_list.split(','):
+            self.listbox_parameter.insert('end', parameter)
+        self.listbox_parameter.pack()
+        self.button_parameter = tk.Button(self.master, text="Submit", command=self.handle_parameter_submit)
+        self.button_parameter.pack()
+        self.parameter_list_received = True
+    def handle_parameter_submit(self):
+        selected_parameters = self.listbox_parameter.curselection()
+        if not selected_parameters:
+            return
+        self.parameter_user = self.listbox_parameter.get(selected_parameters[0])
+        self.listbox_parameter.pack_forget()
+        self.button_parameter.pack_forget()
+        self.label_parameter.pack_forget()
+        self.s.send(self.parameter_user.encode('ascii'))
+        self.parameter_valid = self.s.recv(1024).decode('ascii') == "valid_parameter"
+        if not self.parameter_valid:
+            self.incorrect_parameter = True
+        self.show_date_selector()
 
-            if incorrect_area == 0 and area_selected == 0:
+    def show_date_selector(self):
+        if self.incorrect_parameter:
+            self.label_parameter.pack()
+            self.s.send("parameter_received".encode('ascii'))
+            self.parameter_list = self.s.recv(1024)
+            self.listbox_parameter = tk.Listbox(self.master, selectmode='SINGLE', exportselection=0)
+            for parameter in self.parameter_list.split(','):
+                self.listbox_parameter.insert('end', parameter)
+            self.listbox_parameter.pack()
+            self.button_parameter = tk.Button(self.master, text="Submit", command=self.handle_parameter_submit)
+            self.button_parameter.pack()
+            return
+        self.s.send("date_received".encode('ascii'))
+        self.label_date = tk.Label(self.master, text='Please enter a date in (dd/mm/yyyy) format: ')
+        self.entry_date = tk.Entry(self.master)
+        self.button_date = tk.Button(self.master, text="Submit", command=self.handle_date_submit)
+        self.label_date.pack()
+        self.entry_date.pack()
+        self.button_date.pack()
 
-                print('Here is the list of available areas: ')
-                print(area_list)
-                area_user = input('Please select one of the areas:')
-                print("area_user_input1:", area_user)
-                s.send(area_user.encode('ascii'))
+    def handle_date_submit(self):
+        self.date_user = self.entry_date.get().strip()
+        self.label_date.pack_forget()
+        self.entry_date.pack_forget()
+        self.button_date.pack_forget()
+        self.s.send(self.date_user.encode('ascii'))
+        info = self.s.recv(1024)
+        if info == "invalid_date":
+            self.incorrect_date is True
+        self.show_weather_report()
 
-            if incorrect_area == 1 and area_selected == 0:
+    def show_weather_report(self):
+        if self.incorrect_date:
+            self.label_date.pack()
+            self.entry_date.pack()
+            self.button_date.pack()
+            return
+        self.s.send("requested_info".encode('ascii'))
+        self.report = self.s.recv(1024)
+        self.report = str(self.report.decode('ascii'))
+        self.label_report = tk.Label(self.master, text=self.report)
+        self.label_report.pack()
 
-                print(f'\n{name}, please be more attentive, here is the list again:')
-                print(area_list)
-                area_user = input('Please select one of THESE areas:')
-                print("area_user_input2:", area_user)
-                s.send(area_user.encode('ascii'))    
-            if area_selected == 0:
-                #Checking if area is in the list
-                area_valid = s.recv(1024)
-                area_valid = str(area_valid.decode('ascii'))
-                print("valid area:", area_valid)
+    def handle_exit(self):
+        self.master.destroy()
 
-            if area_valid == "valid_area" and area_selected == 0:
-                print("AREA RECEIVED")
-                area_selected = 1
-            elif area_valid == "wrong_area" and area_selected == 0:
-                incorrect_area = 1
-                print("FAILED TO RECEIVE AREA")
+           
 
-            if area_selected == 1 and parameter_selected == 0:
-                s.send("parameter_received".encode('ascii'))
-                parameter_list = s.recv(1024)
-                parameter_list = str(parameter_list.decode('ascii'))
-
-                if incorrect_parameter == 0 and parameter_selected == 0:
-                    
-                    print(f'\n{name}, choose what precisely you would like to know:')
-                    
-                    print(parameter_list)
-                    parameter_user = input('Please select one of the parameters: ')
-                    s.send(parameter_user.encode('ascii'))
-                
-                if incorrect_parameter == 1 and parameter_selected == 0:
-                    
-                    print(f'\n{name}, you need to choose from the list:')
-
-                    print(parameter_list)
-                    parameter_user = input('Please select one of the parameters: ')
-                    s.send(parameter_user.encode('ascii'))
-
-                if parameter_selected == 0:    
-                    parameter_valid = s.recv(1024)
-                    parameter_valid = str(parameter_valid.decode('ascii'))
-
-                #RE WRITE WITH DATAFRAMES
-                if parameter_valid == "valid_parameter":
-                    print("PARAMETER RECEIVED")
-                    parameter_selected = 1
-                else:
-                    print("FAILED TO RECEIVE PARAMETER")
-                    incorrect_parameter = 1
-
-            if parameter_selected == 1 and date_selected == 0:
-                s.send("date_received".encode('ascii'))
-                
-                if incorrect_date == 0 and date_selected == 0:
-                    date_user = input(f'\n{name}, please choose the date in the following format (dd/mm/yyyy): ')
-                    s.send(date_user.encode('ascii'))
-
-                elif incorrect_date == 1 and date_selected == 0:  
-                    date_user = input(f'\n{name}, You cant select date from the past or in another format, please try again (dd/mm/yyyy): ')
-                    s.send(date_user.encode('ascii'))
-                
-                if date_selected == 0:
-                    date_valid = s.recv(1024)
-                    date_valid = str(date_valid.decode('ascii'))
-
-                if date_valid == "valid_date":
-                    print("DATE RECEIVED")
-                    date_selected = 1
-                else:
-                    print("FAILED TO RECEIVE DATE")
-                    incorrect_date = 1
-            
-            if area_selected == 1 and parameter_selected == 1 and date_selected == 1:
-                print("Predicting...")
-                print("\nCalculating...")
-                print("\nCounting Stars...")
-                
-                #When received data from ML:
-                s.send("requested_info".encode('ascii'))
-                response = s.recv(1024)
-                print(f"Results:\n {response}")
-
-                ans = input("\nWould you like to do use my service again? (y/n)")
-                if ans == 'y':
-                    area_list_received = 0
-
-                    incorrect_area = 0
-                    area_selected = 0
-
-                    parameter_selected = 0
-                    incorrect_parameter = 0
-
-                    date_selected = 0
-                    incorrect_date = 0
-                    continue
-                else: 
-                    break
-            
-            continue
-        else:
-            run = 0
-            break
-
-    # close the connection
-    s.close()
 if __name__ == '__main__':
-    Main()
-
+    root = Tk()
+    app = WeatherPredictor(root)
+    root.mainloop()

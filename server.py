@@ -10,6 +10,8 @@ print_lock = threading.Lock()
 # thread fuction
 def threaded(c):
     date_obj = 0
+    parameter_list = 0
+    chosen_parameter = 0
     while True:
         # data received from client
         data = c.recv(1024)
@@ -23,7 +25,7 @@ def threaded(c):
         if data == "name_received":
             #print("name received")
             #print("Sending area list")
-            areas_list = "ALL_AREAS"
+            areas_list = "London"
             c.send(areas_list.encode('ascii'))
         if data == "area_received":
             #Listening for the chosen area
@@ -39,8 +41,9 @@ def threaded(c):
 
         if data == "parameter_received":
             #Send a list of parameters
-            parameter_list = "ALL_PARAMETERS"
+            parameter_list = "Temp(max),Temp(Min),Temperature(avg),Humidity,Cloud Cover,Precipitation,Windspeed"
             c.send(parameter_list.encode('ascii'))
+            parameter_list = [parameter.strip() for parameter in parameter_list.split(",")]
             chosen_parameter = c.recv(1024)
             chosen_parameter = str(chosen_parameter.decode('ascii'))
             print("Parameter inputted: ", chosen_parameter)
@@ -48,7 +51,7 @@ def threaded(c):
 
             #RE WRITE WITH DATAFRAMES
             #Check if parameter is within the list:
-            if chosen_parameter == "Precipitation":
+            if chosen_parameter in parameter_list:
                 c.send("valid_parameter".encode('ascii'))
             else:
                 c.send("wrong_parameter".encode('ascii'))
@@ -65,6 +68,7 @@ def threaded(c):
                 day, month, year = date.decode().split('/')
                 if int(day) > 31 or int(month) > 12:
                     c.send("wrong_date".encode('ascii'))
+                    print("yes")
                 else:
                     # Convert the received date string to a datetime object
                     date_obj = datetime.datetime.strptime(date.decode(), "%d/%m/%Y")
@@ -76,13 +80,13 @@ def threaded(c):
                         c.send("valid_date".encode('ascii'))
                     else:
                         # The received date is in the past or present
+                        print("yes")
                         c.send("wrong_date".encode('ascii'))
         if data == "requested_info":
             print(date_obj)
             predictions = predict_weather(date_obj)
-            prediction_1 = predictions[5]
+            prediction_1 = predictions[parameter_list.index(chosen_parameter)]
             c.send(str(prediction_1).encode('ascii'))
-            c.send("Your requested weather".encode('ascii'))
             
         
     # connection closed
