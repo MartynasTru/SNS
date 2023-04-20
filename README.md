@@ -11,6 +11,6 @@ The project is organized as follows:
 
 - [predict.py](predict.py) - this contains code for  function that takes the date as an input as uses the pretrained model to predict the weather conditions on the inputted date
 
-- [lstm model.py](lstm model.py) - this contains code that preforms data preprocessing of the data and hyper parameter tuning before training the lstm model
+- [lstm_model.py](lstm_model.py) - this contains code that preforms data preprocessing of the data and hyper parameter tuning before training the lstm model
 
 - [london_dataset.csv](london_dataset.csv) - this the dataset the model is trained on
