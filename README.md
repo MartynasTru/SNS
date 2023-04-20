@@ -9,6 +9,5 @@ The project is organized as follows:
 
 - [model.h5](model.h5) - this is the pre-trained LSTM model
 
--[predict.py](predict.py) - this contains code for  function that takes the date as an input as uses the pretrained model to predict the weather conditions on the inputted date
+- [predict.py](predict.py) - this contains code for  function that takes the date as an input as uses the pretrained model to predict the weather conditions on the inputted date
 
--
