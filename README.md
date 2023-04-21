@@ -30,3 +30,4 @@ The project is organized as follows:
 - [ ] Add Data exploration in methodolgy/Description of datasets
 - [ ] Add MLR brief in Methodology section as "traditional method"
 - [ ] compare results of traditional MLR to LSTM
+- [ ] where is Table 1 in report?
