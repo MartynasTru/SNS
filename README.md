@@ -14,3 +14,19 @@ The project is organized as follows:
 - [lstm_model.py](lstm_model.py) - this contains code that preforms data preprocessing of the data and hyper parameter tuning before training the lstm model
 
 - [london_dataset.csv](london_dataset.csv) - this the dataset the model is trained on
+
+
+#### TO-DO
+
+- [ ] Add and describe MLR model, results file with all graphs and iterations(notebook?)
+
+- [ ] Add instuctions to run?
+
+- [ ] instructions for imports?
+
+- [ ] 'pip install tk'
+- [x] In literature review, introduce MLR with refs as "traditional method"
+- [x] Add Data exploration in methodolgy/Description of datasets
+- [x] Add MLR brief in Methodology section as "traditional method"
+- [x] compare results of traditional MLR to LSTM
+- [x] where is Table 1 in report?
