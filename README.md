@@ -14,3 +14,7 @@ The project is organized as follows:
 - [lstm_model.py](lstm_model.py) - this contains code that preforms data preprocessing of the data and hyper parameter tuning before training the lstm model
 
 - [london_dataset.csv](london_dataset.csv) - this the dataset the model is trained on
+
+
+//TO-DO
+Add and describe MLR model, results file
