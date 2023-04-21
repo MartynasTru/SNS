@@ -18,3 +18,4 @@ The project is organized as follows:
 
 //TO-DO
 Add and describe MLR model, results file
+Add instuctions to run?
