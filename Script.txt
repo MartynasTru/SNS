@@ -8,7 +8,7 @@ Making an API for SNS:
 	...
     Please make your choice.
  
- USER --> London | USER --> Bullshit --> Sorry, I do not cover the are, here is the list again:
+ USER --> London | USER --> New York --> Sorry, I do not cover the are, here is the list again:
  3. What would you like to know about London? I offer a variety of weather parameters, please choose one:
 	Percipitation
 	Cloudiness
