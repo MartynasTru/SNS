@@ -18,10 +18,15 @@ The project is organized as follows:
 
 #### TO-DO
 
-- [ ] Add and describe MLR model, results file (notebook?)
+- [ ] Add and describe MLR model, results file with all graphs and iterations(notebook?)
 
 - [ ] Add instuctions to run?
 
 - [ ] instructions for imports?
 
-"pip install tk"
+- [ ] 'pip install tk'
+- [ ] In introduction, introduce MLR with refs as "traditional method"
+
+- [ ] Add Data exploration in methodolgy/Description of datasets
+- [ ] Add MLR brief in Methodology section as "traditional method"
+- [ ] compare results of traditional MLR to LSTM
