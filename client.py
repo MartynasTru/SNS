@@ -5,8 +5,7 @@ import threading
 from PIL import Image, ImageTk
 import tkcalendar
 import datetime
-import time
-import tkinter.simpledialog
+
 
 
 class WeatherPredictor:
