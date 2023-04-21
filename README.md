@@ -15,6 +15,10 @@ The project is organized as follows:
 
 - [london_dataset.csv](london_dataset.csv) - this the dataset the model is trained on
 
+- [requirements.txt](requirements.txt) - the file contains all the dependencies needed to run the code
+
+To run the chatbot first install the requirements file then run the server file and finally run the client file.
+
 
 #### TO-DO
 
