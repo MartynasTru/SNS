@@ -18,8 +18,8 @@ The project is organized as follows:
 
 ##TO-DO
 
-- [] Add and describe MLR model, results file (notebook?)
+- [ ] Add and describe MLR model, results file (notebook?)
 
-- [] Add instuctions to run?
-- 
-- [] instructions for imports?
+- [ ] Add instuctions to run?
+
+- [ ] instructions for imports?
