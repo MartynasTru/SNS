@@ -17,20 +17,8 @@ The project is organized as follows:
 
 - [requirements.txt](requirements.txt) - the file contains all the dependencies needed to run the code
 
-To run the chatbot first install the requirements file then run the server file and finally run the client file.
+In order to run the ChatBot:
 
-
-#### TO-DO
-
-- [ ] Add and describe MLR model, results file with all graphs and iterations(notebook?)
-
-- [ ] Add instuctions to run?
-
-- [ ] instructions for imports?
-
-- [ ] 'pip install tk'
-- [x] In literature review, introduce MLR with refs as "traditional method"
-- [x] Add Data exploration in methodolgy/Description of datasets
-- [x] Add MLR brief in Methodology section as "traditional method"
-- [x] compare results of traditional MLR to LSTM
-- [x] where is Table 1 in report?
+- Install the required dependencies by running pip install -r requirements.txt (Python 2), or pip3 install -r requirements.txt (Python 3)
+- Run server.py
+- Run  client.py
