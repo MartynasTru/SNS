@@ -23,3 +23,5 @@ The project is organized as follows:
 - [ ] Add instuctions to run?
 
 - [ ] instructions for imports?
+
+"pip install tk"
