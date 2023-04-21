@@ -25,7 +25,7 @@ The project is organized as follows:
 - [ ] instructions for imports?
 
 - [ ] 'pip install tk'
-- [ ] In introduction, introduce MLR with refs as "traditional method"
+- [ ] In literature review, introduce MLR with refs as "traditional method"
 
 - [ ] Add Data exploration in methodolgy/Description of datasets
 - [ ] Add MLR brief in Methodology section as "traditional method"
