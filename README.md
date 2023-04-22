@@ -13,11 +13,13 @@ The project is organized as follows:
 
 - [lstm_model.py](lstm_model.py) - this contains code that preforms data preprocessing of the data and hyper parameter tuning before training the lstm model
 
+- [mlr-model-4-variables.ipynb](mlr-model-4-variables.ipynb) - this contains the code to build and evaluate MLR model to predict temp, humidity, cloudcover, weather and includes the relevant training results and graphs (in the form of Jupyter notebook)
+
 - [london_dataset.csv](london_dataset.csv) - this the dataset the model is trained on
 
 - [requirements.txt](requirements.txt) - the file contains all the dependencies needed to run the code
 
-In order to run the ChatBot:
+####In order to run the ChatBot:
 
 - Install the required dependencies by running pip install -r requirements.txt (Python 2), or pip3 install -r requirements.txt (Python 3)
 - Run server.py
