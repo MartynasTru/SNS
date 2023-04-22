@@ -19,8 +19,8 @@ The project is organized as follows:
 
 - [requirements.txt](requirements.txt) - the file contains all the dependencies needed to run the code
 
-####In order to run the ChatBot:
+#### **In order to run the ChatBot:**
 
-- Install the required dependencies by running pip install -r requirements.txt (Python 2), or pip3 install -r requirements.txt (Python 3)
+- Install the required dependencies by running `pip install -r requirements.txt` (Python 2), or `pip3 install -r requirements.txt` (Python 3)
 - Run server.py
 - Run  client.py
